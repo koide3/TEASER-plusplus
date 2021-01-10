@@ -128,8 +128,8 @@ if (BUILD_PYTHON_BINDINGS)
 endif ()
 
 # export targets
-export(TARGETS ${TEASERPP_EXPORTED_TARGETS} FILE teaserpp-exports.cmake)
+# export(TARGETS ${TEASERPP_EXPORTED_TARGETS} FILE teaserpp-exports.cmake)
 
-install(FILES cmake/teaserppConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/teaserpp
-        )
+# install(FILES cmake/teaserppConfig.cmake
+#        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/teaserpp
+#        )
