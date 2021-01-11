@@ -135,24 +135,35 @@ void Matcher::advancedMatching(bool use_crosscheck, bool use_tuple_test, float t
   KDTree feature_tree_j(flann::KDTreeSingleIndexParams(15));
   buildKDTree(features_[fj], &feature_tree_j);
 
-  std::vector<int> corres_K, corres_K2;
-  std::vector<float> dis;
-  std::vector<int> ind;
-
   std::vector<std::pair<int, int>> corres;
   std::vector<std::pair<int, int>> corres_cross;
   std::vector<std::pair<int, int>> corres_ij;
   std::vector<std::pair<int, int>> corres_ji;
+
+  std::vector<std::vector<int>> corres_Kj(nPtj);
+  std::vector<std::vector<int>> corres_Ki(nPti);
+#pragma omp parallel for
+  for(int j = 0; j < nPtj; j++) {
+    std::vector<float> dis;
+    searchKDTree(&feature_tree_i, features_[fj][j], corres_Kj[j], dis, 1);
+  }
+#pragma omp parallel for
+  for(int i = 0; i < nPti; i++) {
+    std::vector<float> dis;
+    searchKDTree(&feature_tree_j, features_[fi][i], corres_Ki[i], dis, 1);
+  }
 
   ///////////////////////////
   /// INITIAL MATCHING
   ///////////////////////////
   std::vector<int> i_to_j(nPti, -1);
   for (int j = 0; j < nPtj; j++) {
-    searchKDTree(&feature_tree_i, features_[fj][j], corres_K, dis, 1);
+    std::vector<int> corres_K;
+
+    corres_K = corres_Kj[j];
     int i = corres_K[0];
     if (i_to_j[i] == -1) {
-      searchKDTree(&feature_tree_j, features_[fi][i], corres_K, dis, 1);
+      corres_K = corres_Ki[i];
       int ij = corres_K[0];
       i_to_j[i] = ij;
     }
@@ -315,7 +326,7 @@ template <typename T> void Matcher::buildKDTree(const std::vector<T>& data, Matc
 
 template <typename T>
 void Matcher::searchKDTree(Matcher::KDTree* tree, const T& input, std::vector<int>& indices,
-                           std::vector<float>& dists, int nn) {
+                           std::vector<float>& dists, int nn) const {
   int rows_t = 1;
   int dim = input.size();
 

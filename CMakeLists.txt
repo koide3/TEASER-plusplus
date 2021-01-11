@@ -22,6 +22,12 @@ option(BUILD_WITH_MARCH_NATIVE "Build with flag march=native" OFF)
 option(ENABLE_MKL "Try to use Eigen with MKL" OFF)
 option(ENABLE_DIAGNOSTIC_PRINT "Enable printing of diagnostic messages" ON)
 
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 if (ENABLE_DIAGNOSTIC_PRINT)
     message(STATUS "Enable printing of diagnostic messages.")
     add_definitions(-DTEASER_DIAG_PRINT)

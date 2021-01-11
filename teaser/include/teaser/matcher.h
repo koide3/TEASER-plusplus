@@ -49,7 +49,7 @@ private:
 
   template <typename T>
   void searchKDTree(KDTree* tree, const T& input, std::vector<int>& indices,
-                    std::vector<float>& dists, int nn);
+                    std::vector<float>& dists, int nn) const;
 
   void advancedMatching(bool use_crosscheck, bool use_tuple_test, float tuple_scale);
 
